@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:InfomineoGithub/deer-flow.git
+    repoURL: https://github.com/InfomineoGithub/deer-flow.git
     targetRevision: main
     path: helm/deerflow
     helm:
