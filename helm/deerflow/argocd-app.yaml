@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: deerflow
+  namespace: argocd
+  annotations:
+    # Ignore sandbox pods/services created dynamically by the provisioner
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:InfomineoGithub/deer-flow.git
+    targetRevision: main
+    path: helm/deerflow
+    helm:
+      valueFiles:
+        - secrets+gpg-import:///helm-secrets-private-keys/key.asc?values.enc.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: deer-flow
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    - group: apps
+      jqPathExpressions:
+        - .spec.template.spec.containers[].resources
+      kind: Deployment
+      name: "*"
+      namespace: deer-flow
