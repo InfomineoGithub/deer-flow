@@ -20,8 +20,7 @@ metadata:
     argocd-image-updater.argoproj.io/frontend.helm.image-tag: images.frontend.tag
     argocd-image-updater.argoproj.io/provisioner.helm.image-name: images.provisioner.repository
     argocd-image-updater.argoproj.io/provisioner.helm.image-tag: images.provisioner.tag
-    argocd-image-updater.argoproj.io/write-back-method: "git:secret:argocd/argocd-image-updater-git-creds"
-    argocd-image-updater.argoproj.io/write-back-target: helmvalues
+    argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/git-branch: main
 spec:
   project: default
