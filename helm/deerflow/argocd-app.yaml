@@ -6,6 +6,23 @@ metadata:
   annotations:
     # Ignore sandbox pods/services created dynamically by the provisioner
     argocd.argoproj.io/compare-options: IgnoreExtraneous
+    # ArgoCD Image Updater — auto-deploy on new image digest
+    argocd-image-updater.argoproj.io/image-list: >-
+      backend=europe-west1-docker.pkg.dev/brain-staging-450115/deer-flow-backend/api:latest,
+      frontend=europe-west1-docker.pkg.dev/brain-staging-450115/deer-flow-frontend/frontend:latest,
+      provisioner=europe-west1-docker.pkg.dev/brain-staging-450115/deer-flow-provisioner/provisioner:latest
+    argocd-image-updater.argoproj.io/backend.update-strategy: digest
+    argocd-image-updater.argoproj.io/frontend.update-strategy: digest
+    argocd-image-updater.argoproj.io/provisioner.update-strategy: digest
+    argocd-image-updater.argoproj.io/backend.helm.image-name: images.backend.repository
+    argocd-image-updater.argoproj.io/backend.helm.image-tag: images.backend.tag
+    argocd-image-updater.argoproj.io/frontend.helm.image-name: images.frontend.repository
+    argocd-image-updater.argoproj.io/frontend.helm.image-tag: images.frontend.tag
+    argocd-image-updater.argoproj.io/provisioner.helm.image-name: images.provisioner.repository
+    argocd-image-updater.argoproj.io/provisioner.helm.image-tag: images.provisioner.tag
+    argocd-image-updater.argoproj.io/write-back-method: "git:secret:argocd/argocd-image-updater-git-creds"
+    argocd-image-updater.argoproj.io/write-back-target: helmvalues
+    argocd-image-updater.argoproj.io/git-branch: main
 spec:
   project: default
   source:
