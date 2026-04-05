@@ -34,18 +34,22 @@ spec:
                   key: BETTER_AUTH_SECRET
             - name: BETTER_AUTH_URL
               value: {{ .Values.publicUrl | quote }}
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /
               port: http
-            initialDelaySeconds: 15
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: http
-            initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
           resources:
