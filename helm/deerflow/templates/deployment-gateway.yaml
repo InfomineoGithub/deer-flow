@@ -34,6 +34,18 @@ spec:
               value: "true"
             - name: DEER_FLOW_HOME
               value: /app/backend/.deer-flow
+            - name: LANGCHAIN_TRACING_V2
+              value: "{{ .Values.langsmith.enabled }}"
+            {{- if .Values.langsmith.enabled }}
+            - name: LANGSMITH_API_KEY
+              value: {{ .Values.langsmith.apiKey | quote }}
+            {{- end }}
+            - name: LANGFUSE_TRACING
+              value: "{{ .Values.langfuse.enabled }}"
+            {{- if .Values.langfuse.enabled }}
+            - name: LANGFUSE_BASE_URL
+              value: {{ .Values.langfuse.host | quote }}
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "deerflow.fullname" . }}-secrets

@@ -21,12 +21,12 @@ metadata:
     argocd-image-updater.argoproj.io/provisioner.helm.image-name: images.provisioner.repository
     argocd-image-updater.argoproj.io/provisioner.helm.image-tag: images.provisioner.tag
     argocd-image-updater.argoproj.io/write-back-method: git
-    argocd-image-updater.argoproj.io/git-branch: main
+    argocd-image-updater.argoproj.io/git-branch: dev
 spec:
   project: default
   source:
     repoURL: https://github.com/InfomineoGithub/deer-flow.git
-    targetRevision: main
+    targetRevision: dev
     path: helm/deerflow
     helm:
       valueFiles:

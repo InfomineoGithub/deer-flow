@@ -44,6 +44,12 @@ spec:
             - name: LANGSMITH_API_KEY
               value: {{ .Values.langsmith.apiKey | quote }}
             {{- end }}
+            - name: LANGFUSE_TRACING
+              value: "{{ .Values.langfuse.enabled }}"
+            {{- if .Values.langfuse.enabled }}
+            - name: LANGFUSE_BASE_URL
+              value: {{ .Values.langfuse.host | quote }}
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "deerflow.fullname" . }}-secrets
