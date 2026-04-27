@@ -13,18 +13,12 @@ data:
     # Provider-Level Configurations
     
     x-google-defaults: &google-defaults
-      use: langchain_google_vertexai:ChatVertexAI
-      credentials_path: $VERTEX_AI_CREDENTIALS_PATH
+      use: langchain_google_genai:ChatGoogleGenerativeAI
+      google_api_key: $GOOGLE_API_KEY
       temperature: 0.5
       streaming: true
       verbose: true
       max_output_tokens: 8192
-      safety_settings:
-        HARM_CATEGORY_UNSPECIFIED: BLOCK_NONE
-        HARM_CATEGORY_DANGEROUS_CONTENT: BLOCK_ONLY_HIGH
-        HARM_CATEGORY_HATE_SPEECH: BLOCK_ONLY_HIGH
-        HARM_CATEGORY_HARASSMENT: BLOCK_ONLY_HIGH
-        HARM_CATEGORY_SEXUALLY_EXPLICIT: BLOCK_MEDIUM_AND_ABOVE
       supports_vision: true
       supports_thinking: true
 
