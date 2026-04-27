@@ -228,25 +228,25 @@ data:
         name: claude-opus-4-7
         display_name: "Claude Opus 4.7"
         description: "Latest Opus model with step-change improvement in agentic coding, vision, and multi-step tasks (April 2026)"
-        model_name: claude-opus-4-7
+        model: claude-opus-4-7
 
       - <<: *anthropic-defaults
         name: claude-sonnet-4-6
         display_name: "Claude Sonnet 4.6"
         description: "Latest Sonnet - best combination of speed and intelligence with extended thinking capabilities"
-        model_name: claude-sonnet-4-6
+        model: claude-sonnet-4-6
 
       - <<: *anthropic-defaults
         name: claude-sonnet-4-5
         display_name: "Claude Sonnet 4.5"
         description: "Powerful Sonnet model with enhanced reasoning and extended thinking"
-        model_name: claude-sonnet-4-5
+        model: claude-sonnet-4-5
 
       - <<: *anthropic-defaults
         name: claude-haiku-4-5
         display_name: "Claude Haiku 4.5"
         description: "The fastest model with near-frontier intelligence"
-        model_name: claude-haiku-4-5
+        model: claude-haiku-4-5
 
       # ---------------- Mistral AI ----------------
 
@@ -254,31 +254,31 @@ data:
         name: mistral-small-4
         display_name: "Mistral Small 4"
         description: "Hybrid model unifying instruct, reasoning, and coding in a single efficient model (March 2026)"
-        model_name: mistral-small-4-0-26-03
+        model: mistral-small-4-0-26-03
 
       - <<: *mistral-defaults
         name: mistral-large-3
         display_name: "Mistral Large 3"
         description: "State-of-the-art, open-weight, general-purpose multimodal model (December 2025)"
-        model_name: mistral-large-3-25-12
+        model: mistral-large-3-25-12
 
       - <<: *mistral-defaults
         name: mistral-medium-latest
         display_name: "Mistral Medium"
         description: "Mistral AI medium-tier model with strong capabilities"
-        model_name: mistral-medium-latest
+        model: mistral-medium-latest
 
       - <<: *mistral-defaults
         name: magistral-medium-1-2
         display_name: "Magistral Medium 1.2"
         description: "Frontier-class multimodal reasoning model (September 2025)"
-        model_name: magistral-medium-1-2-25-09
+        model: magistral-medium-1-2-25-09
 
       - <<: *mistral-defaults
         name: devstral-2
         display_name: "Devstral 2"
         description: "Frontier code agents model for solving software engineering tasks (December 2025)"
-        model_name: devstral-2-25-12
+        model: devstral-2-25-12
 
     tool_groups:
       - name: web
