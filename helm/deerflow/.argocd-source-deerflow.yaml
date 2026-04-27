@@ -4,7 +4,7 @@ helm:
     value: europe-west1-docker.pkg.dev/brain-staging-450115/deer-flow-backend/api
     forcestring: true
   - name: images.backend.tag
-    value: latest@sha256:974e4220b5c52d3d0f66a7a2fd578e968e8e7e5db3b4b12a48d658961aa7d4d4
+    value: latest@sha256:5ac85a97b861bd6f65cfffce7832aa7571d30e562c467e08463294bd761319ed
     forcestring: true
   - name: images.frontend.repository
     value: europe-west1-docker.pkg.dev/brain-staging-450115/deer-flow-frontend/frontend
