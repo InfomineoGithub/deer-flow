@@ -6,6 +6,7 @@ on:
     paths:
       - 'backend/**'
       - 'skills/**'
+      - '.dockerignore'
       - 'frontend/**'
       - 'docker/provisioner/**'
 
@@ -33,6 +34,7 @@ jobs:
             backend:
               - 'backend/**'
               - 'skills/**'
+              - '.dockerignore'
             frontend:
               - 'frontend/**'
             provisioner:
