@@ -5,6 +5,7 @@ on:
     branches: [dev]
     paths:
       - 'backend/**'
+      - 'skills/**'
       - 'frontend/**'
       - 'docker/provisioner/**'
 
@@ -27,9 +28,11 @@ jobs:
         uses: dorny/paths-filter@v3
         id: filter
         with:
+          base: ${{ github.ref }}
           filters: |
             backend:
               - 'backend/**'
+              - 'skills/**'
             frontend:
               - 'frontend/**'
             provisioner:

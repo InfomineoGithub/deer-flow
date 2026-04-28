@@ -65,3 +65,4 @@ helm/deerflow/values.yaml
 /frontend/playwright-report/
 .gstack/
 .worktrees
+.codex

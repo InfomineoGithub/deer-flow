@@ -41,6 +41,7 @@ WORKDIR /app
 
 # Copy backend source code
 COPY backend ./backend
+COPY skills ./skills
 
 # Install dependencies with cache mount
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -77,8 +78,9 @@ COPY --from=uv-source /uv /uvx /usr/local/bin/
 # Set working directory
 WORKDIR /app
 
-# Copy backend with pre-built virtualenv from builder
+# Copy backend and default skills from builder
 COPY --from=builder /app/backend ./backend
+COPY --from=builder /app/skills ./skills
 
 # Expose ports (gateway: 8001, langgraph: 2024)
 EXPOSE 8001 2024
