@@ -6,7 +6,9 @@ metadata:
     {{- include "deerflow.labels" . | nindent 4 }}
     app.kubernetes.io/component: gateway
 spec:
+  {{- if not .Values.autoscaling.gateway.enabled }}
   replicas: {{ .Values.replicaCount.gateway }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "deerflow.selectorLabels" . | nindent 6 }}
@@ -19,6 +21,20 @@ spec:
       annotations:
         checksum/config: {{ include (print .Template.BasePath "/configmap-deerflow.yaml") . | sha256sum }}
     spec:
+      initContainers:
+        - name: init-extensions-config
+          image: busybox
+          command: ["sh", "-c", "CHECKSUM=$(md5sum /default-config/extensions_config.json | cut -d' ' -f1); SENTINEL=/writable-config/.extensions_config.checksum; if [ ! -f /writable-config/extensions_config.json ] || [ \"$(cat $SENTINEL 2>/dev/null)\" != \"$CHECKSUM\" ]; then cp /default-config/extensions_config.json /writable-config/extensions_config.json && echo \"$CHECKSUM\" > $SENTINEL; fi"]
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          volumeMounts:
+            - name: config
+              mountPath: /default-config
+              readOnly: true
+            - name: deer-flow-home
+              mountPath: /writable-config
       containers:
         - name: gateway
           image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag }}"
@@ -49,22 +65,18 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "deerflow.fullname" . }}-secrets
-          startupProbe:
-            httpGet:
-              path: /health
-              port: http
-            failureThreshold: 30
-            periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /health
               port: http
+            initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /health
               port: http
+            initialDelaySeconds: 15
             periodSeconds: 5
             timeoutSeconds: 3
           resources:
@@ -74,15 +86,14 @@ spec:
               mountPath: /app/backend/config.yaml
               subPath: config.yaml
               readOnly: true
-            - name: config
+            - name: deer-flow-home
               mountPath: /app/backend/extensions_config.json
               subPath: extensions_config.json
-              readOnly: true
             - name: deer-flow-home
               mountPath: /app/backend/.deer-flow
-            - name: skills
-              mountPath: /app/skills
-              readOnly: true
+            - name: deer-flow-home
+              mountPath: /app/skills/custom
+              subPath: skills/custom
       volumes:
         - name: config
           configMap:
@@ -94,5 +105,3 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        - name: skills
-          emptyDir: {}

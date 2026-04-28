@@ -6,7 +6,9 @@ metadata:
     {{- include "deerflow.labels" . | nindent 4 }}
     app.kubernetes.io/component: langgraph
 spec:
+  {{- if not .Values.autoscaling.langgraph.enabled }}
   replicas: {{ .Values.replicaCount.langgraph }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "deerflow.selectorLabels" . | nindent 6 }}
@@ -19,6 +21,28 @@ spec:
       annotations:
         checksum/config: {{ include (print .Template.BasePath "/configmap-deerflow.yaml") . | sha256sum }}
     spec:
+      initContainers:
+        - name: init-extensions-config
+          image: busybox
+          command: ["sh", "-c", "CHECKSUM=$(md5sum /default-config/extensions_config.json | cut -d' ' -f1); SENTINEL=/writable-config/.extensions_config.checksum; if [ ! -f /writable-config/extensions_config.json ] || [ \"$(cat $SENTINEL 2>/dev/null)\" != \"$CHECKSUM\" ]; then cp /default-config/extensions_config.json /writable-config/extensions_config.json && echo \"$CHECKSUM\" > $SENTINEL; fi"]
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          volumeMounts:
+            - name: config
+              mountPath: /default-config
+              readOnly: true
+            - name: deer-flow-home
+              mountPath: /writable-config
+        - name: sync-skills
+          image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag }}"
+          imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
+          command: ["sh", "-c", "cp -r /app/skills/public /mnt/skills/"]
+          volumeMounts:
+            - name: deer-flow-home
+              mountPath: /mnt/skills
+              subPath: skills
       containers:
         - name: langgraph
           image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag }}"
@@ -53,19 +77,16 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "deerflow.fullname" . }}-secrets
-          startupProbe:
-            tcpSocket:
-              port: http
-            failureThreshold: 30
-            periodSeconds: 5
           livenessProbe:
             tcpSocket:
               port: http
+            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             tcpSocket:
               port: http
+            initialDelaySeconds: 20
             periodSeconds: 5
             timeoutSeconds: 3
           resources:
@@ -74,18 +95,18 @@ spec:
             - name: config
               mountPath: /app/config.yaml
               subPath: config.yaml
-              readOnly: true
-            - name: config
+              readOnly: false
+            - name: deer-flow-home
               mountPath: /app/extensions_config.json
               subPath: extensions_config.json
-              readOnly: true
             - name: deer-flow-home
               mountPath: /app/backend/.deer-flow
-            - name: skills
-              mountPath: /app/skills
-              readOnly: true
-            - name: langgraph-api
+            - name: deer-flow-home
+              mountPath: /app/skills/custom
+              subPath: skills/custom
+            - name: deer-flow-home
               mountPath: /app/backend/.langgraph_api
+              subPath: langgraph_api
       volumes:
         - name: config
           configMap:
@@ -97,7 +118,3 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        - name: skills
-          emptyDir: {}
-        - name: langgraph-api
-          emptyDir: {}

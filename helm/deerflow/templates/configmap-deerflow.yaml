@@ -6,9 +6,10 @@ metadata:
     {{- include "deerflow.labels" . | nindent 4 }}
     app.kubernetes.io/component: config
 data:
+  extensions_config.json: |
+    {"mcpServers": {}, "skills": {}}
   config.yaml: |
     config_version: 1
-
 
     # Provider-Level Configurations
     
@@ -281,27 +282,11 @@ data:
         model: devstral-2-25-12
 
     tool_groups:
-      - name: web
       - name: file:read
       - name: file:write
       - name: bash
 
     tools:
-      - name: web_search
-        group: web
-        use: deerflow.community.tavily.tools:web_search_tool
-        max_results: 5
-
-      - name: web_fetch
-        group: web
-        use: deerflow.community.jina_ai.tools:web_fetch_tool
-        timeout: 10
-
-      - name: image_search
-        group: web
-        use: deerflow.community.image_search.tools:image_search_tool
-        max_results: 5
-
       - name: ls
         group: file:read
         use: deerflow.sandbox.tools:ls_tool
@@ -323,8 +308,7 @@ data:
         use: deerflow.sandbox.tools:bash_tool
 
     sandbox:
-      use: deerflow.community.aio_sandbox:AioSandboxProvider
-      provisioner_url: http://{{ include "deerflow.fullname" . }}-provisioner:8002
+      use: deerflow.sandbox.local:LocalSandboxProvider
 
     skills:
       container_path: /mnt/skills
@@ -348,21 +332,8 @@ data:
       summary_prompt: null
 
     memory:
-      enabled: true
-      storage_path: memory.json
-      debounce_seconds: 30
-      model_name: null
-      max_facts: 100
-      fact_confidence_threshold: 0.7
-      injection_enabled: true
-      max_injection_tokens: 2000
+      enabled: false
 
     checkpointer:
-      type: sqlite
-      connection_string: checkpoints.db
-
-  extensions_config.json: |
-    {
-      "mcpServers": {},
-      "skills": {}
-    }
+      type: {{ .Values.checkpointer.type | default "sqlite" | quote }}
+      connection_string: {{ .Values.checkpointer.connectionString | default "checkpoints.db" | quote }}

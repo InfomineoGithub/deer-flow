@@ -1,4 +1,5 @@
-{{- range $component := list "nginx" "frontend" "gateway" "langgraph" }}
+{{- $components := list "nginx" "frontend" "gateway" "langgraph" }}
+{{- range $component := $components }}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
