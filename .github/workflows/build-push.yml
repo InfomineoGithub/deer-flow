@@ -3,6 +3,10 @@ name: Build & Push
 on:
   push:
     branches: [dev]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker/provisioner/**'
 
 concurrency:
   group: build-${{ github.ref }}
