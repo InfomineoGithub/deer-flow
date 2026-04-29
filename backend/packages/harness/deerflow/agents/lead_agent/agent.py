@@ -5,6 +5,7 @@ from langchain.agents.middleware import AgentMiddleware
 from langchain_core.runnables import RunnableConfig
 
 from deerflow.agents.lead_agent.prompt import apply_prompt_template
+from deerflow.agents.lead_agent.tools.get_tools import resolve_tools
 from deerflow.agents.memory.summarization_hook import memory_flush_hook
 from deerflow.agents.middlewares.clarification_middleware import ClarificationMiddleware
 from deerflow.agents.middlewares.loop_detection_middleware import LoopDetectionMiddleware
@@ -305,10 +306,6 @@ def _build_middlewares(config: RunnableConfig, model_name: str | None, agent_nam
 
 
 def make_lead_agent(config: RunnableConfig):
-    # Lazy import to avoid circular dependency
-    from deerflow.tools import get_available_tools
-    from deerflow.tools.builtins import setup_agent
-
     cfg = _get_runtime_config(config)
 
     thinking_enabled = cfg.get("thinking_enabled", True)
@@ -364,11 +361,27 @@ def make_lead_agent(config: RunnableConfig):
         }
     )
 
+    # Check if model supports tools/function calling
+    supports_tools = model_config.supports_tools
+    if not supports_tools:
+        logger.warning(
+            f"Model '{model_name}' does not support tool calling. Agent will run without tools. "
+            f"Set 'supports_tools: true' in config.yaml if this model should support tools."
+        )
+
+    tools = resolve_tools(
+        supports_tools=supports_tools,
+        is_bootstrap=is_bootstrap,
+        model_name=model_name,
+        subagent_enabled=subagent_enabled,
+        agent_config=agent_config,
+    )
+
     if is_bootstrap:
         # Special bootstrap agent with minimal prompt for initial custom agent creation flow
         return create_agent(
             model=create_chat_model(name=model_name, thinking_enabled=thinking_enabled),
-            tools=get_available_tools(model_name=model_name, subagent_enabled=subagent_enabled) + [setup_agent],
+            tools=tools,
             middleware=_build_middlewares(config, model_name=model_name),
             system_prompt=apply_prompt_template(subagent_enabled=subagent_enabled, max_concurrent_subagents=max_concurrent_subagents, available_skills=set(["bootstrap"])),
             state_schema=ThreadState,
@@ -377,7 +390,7 @@ def make_lead_agent(config: RunnableConfig):
     # Default lead agent (unchanged behavior)
     return create_agent(
         model=create_chat_model(name=model_name, thinking_enabled=thinking_enabled, reasoning_effort=reasoning_effort),
-        tools=get_available_tools(model_name=model_name, groups=agent_config.tool_groups if agent_config else None, subagent_enabled=subagent_enabled),
+        tools=tools,
         middleware=_build_middlewares(config, model_name=model_name, agent_name=agent_name),
         system_prompt=apply_prompt_template(
             subagent_enabled=subagent_enabled, max_concurrent_subagents=max_concurrent_subagents, agent_name=agent_name, available_skills=set(agent_config.skills) if agent_config and agent_config.skills is not None else None

@@ -15,7 +15,7 @@ data:
     
     x-google-defaults: &google-defaults
       use: langchain_google_genai:ChatGoogleGenerativeAI
-      google_api_key: $GOOGLE_API_KEY
+      api_key: $GEMINI_API_KEY
       temperature: 0.5
       streaming: true
       verbose: true
@@ -30,6 +30,7 @@ data:
       streaming: true
       supports_vision: false
       supports_thinking: true
+      supports_tools: false
 
     x-openai-defaults: &openai-defaults
       use: langchain_openai:ChatOpenAI
@@ -70,6 +71,18 @@ data:
         model: gemini-3.1-pro-preview
 
       - <<: *google-defaults
+        name: gemini-3-flash-preview
+        display_name: "Gemini 3 Flash Preview"
+        description: "High-efficiency preview model with exceptional speed and agentic coding capabilities"
+        model: gemini-3-flash-preview
+
+      - <<: *google-defaults
+        name: gemini-3.1-flash-lite-preview
+        display_name: "Gemini 3.1 Flash-Lite Preview"
+        description: "Frontier-class performance rivaling larger models at a fraction of the cost"
+        model: gemini-3.1-flash-lite-preview
+
+      - <<: *google-defaults
         name: gemini-2.5-pro
         display_name: "Gemini 2.5 Pro"
         description: "Advanced reasoning Gemini model, capable of solving complex problems"
@@ -86,32 +99,6 @@ data:
         display_name: "Gemini 2.5 Flash-Lite"
         description: "The fastest and most budget-friendly multimodal model in the 2.5 family"
         model: gemini-2.5-flash-lite
-
-      - <<: *google-defaults
-        name: gemini-3-flash-preview
-        display_name: "Gemini 3 Flash Preview"
-        description: "High-efficiency preview model with exceptional speed and agentic coding capabilities"
-        model: gemini-3-flash-preview
-
-      - <<: *google-defaults
-        name: gemini-3.1-flash-lite-preview
-        display_name: "Gemini 3.1 Flash-Lite Preview"
-        description: "Frontier-class performance rivaling larger models at a fraction of the cost"
-        model: gemini-3.1-flash-lite-preview
-
-      - <<: *google-defaults
-        name: gemini-deep-research-preview
-        display_name: "Gemini Deep Research Preview"
-        description: "Agentic model that autonomously plans and executes multi-step research across hundreds of sources"
-        model: deep-research-preview-04-2026
-        supports_vision: false
-
-      - <<: *google-defaults
-        name: gemini-deep-research-max-preview
-        display_name: "Gemini Deep Research Max Preview"
-        description: "Maximum comprehensiveness for automated context gathering and synthesis across hundreds of sources"
-        model: deep-research-max-preview-04-2026
-        supports_vision: false
 
       # ---------------- Perplexity ----------------
 
@@ -156,6 +143,7 @@ data:
         description: "GPT-4o optimized for search and information retrieval tasks"
         model: gpt-4o-search-preview
         supports_vision: false
+        supports_tools: false
 
       - <<: *openai-defaults
         name: gpt-4.1
@@ -200,12 +188,6 @@ data:
         model: gpt-5-nano
 
       - <<: *openai-defaults
-        name: gpt-5-pro
-        display_name: "GPT-5 Pro"
-        description: "Extended reasoning variant using scaled test-time compute for highest quality responses"
-        model: gpt-5-pro
-
-      - <<: *openai-defaults
         name: gpt-5.4
         display_name: "GPT-5.4"
         description: "Best intelligence at scale for agentic, coding, and professional workflows"
@@ -223,13 +205,19 @@ data:
         description: "Cheapest GPT-5.4-class model for simple high-volume tasks"
         model: gpt-5.4-nano
 
+      - <<: *openai-defaults
+        name: gpt-5.5
+        display_name: "GPT-5.5"
+        description: "Latest GPT-5 generation with enhanced capabilities"
+        model: gpt-5.5
+
       # ---------------- Anthropic ----------------
 
       - <<: *anthropic-defaults
-        name: claude-opus-4-7
-        display_name: "Claude Opus 4.7"
+        name: claude-opus-4-6
+        display_name: "Claude Opus 4.6"
         description: "Latest Opus model with step-change improvement in agentic coding, vision, and multi-step tasks (April 2026)"
-        model: claude-opus-4-7
+        model: claude-opus-4-6
 
       - <<: *anthropic-defaults
         name: claude-sonnet-4-6
@@ -252,34 +240,29 @@ data:
       # ---------------- Mistral AI ----------------
 
       - <<: *mistral-defaults
-        name: mistral-small-4
-        display_name: "Mistral Small 4"
-        description: "Hybrid model unifying instruct, reasoning, and coding in a single efficient model (March 2026)"
-        model: mistral-small-4-0-26-03
+        name: mistral-large-2512
+        display_name: "Mistral Large 2512"
+        description: "Flagship model with best performance for complex tasks"
+        model: mistral-large-2512
 
       - <<: *mistral-defaults
-        name: mistral-large-3
-        display_name: "Mistral Large 3"
-        description: "State-of-the-art, open-weight, general-purpose multimodal model (December 2025)"
-        model: mistral-large-3-25-12
+        name: pixtral-large-2411
+        display_name: "Pixtral Large"
+        description: "Multimodal model with vision capabilities"
+        model: pixtral-large-2411
+        supports_vision: true
 
       - <<: *mistral-defaults
-        name: mistral-medium-latest
-        display_name: "Mistral Medium"
-        description: "Mistral AI medium-tier model with strong capabilities"
-        model: mistral-medium-latest
+        name: mistral-small-2603
+        display_name: "Mistral Small 2603"
+        description: "Efficient model for balanced performance"
+        model: mistral-small-2603
 
       - <<: *mistral-defaults
-        name: magistral-medium-1-2
-        display_name: "Magistral Medium 1.2"
-        description: "Frontier-class multimodal reasoning model (September 2025)"
-        model: magistral-medium-1-2-25-09
-
-      - <<: *mistral-defaults
-        name: devstral-2
-        display_name: "Devstral 2"
-        description: "Frontier code agents model for solving software engineering tasks (December 2025)"
-        model: devstral-2-25-12
+        name: magistral-medium-2509
+        display_name: "Magistral Medium"
+        description: "Multimodal reasoning model"
+        model: magistral-medium-2509
 
     tool_groups:
       - name: file:read
